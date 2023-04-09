@@ -1,1 +1,1 @@
-import "./style.postcss"
+import "./app.postcss"
