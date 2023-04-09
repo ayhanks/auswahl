@@ -6,7 +6,7 @@
   --auswahl-arrow-color: #000;
   --auswahl-arrow-size: 5px;
 
-  --auswahl-option-padding: 0.25rem 1rem;
+  --auswahl-option-padding: 0.5rem 1rem;
   --auswahl-option-background: transparent;
   --auswahl-option-selected-background: #007bff;
   --auswahl-option-selected-color: #fff;
@@ -67,7 +67,17 @@
       }
     }
   }
-  &.is-open {
+  &__hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+  }
+  &--is-open {
     .auswahl__selected {
       border-bottom: var(--auswahl-border-selected);
     }
