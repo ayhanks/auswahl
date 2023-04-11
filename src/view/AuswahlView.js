@@ -2,13 +2,10 @@ export default class AuswahlView {
   #ref;
   #container;
 
-  constructor({ ref, options }) {
+  constructor({ ref }) {
     this.#ref = ref;
 
     this.#hide();
-    this.render(options, true);
-
-    this.#handleClick();
   }
 
   render(data = [], initial = false) {
@@ -22,16 +19,15 @@ export default class AuswahlView {
     this.#container = document.createElement('div')
     this.#container.classList.add('auswahl-container');
 
-
-    this.el = document.createElement('div')
-    this.el.classList.add('auswahl');
-    console.log(this.el)
+    const auswahl = document.createElement('div')
+    auswahl.classList.add('auswahl');
 
     const auswahlSelected = document.createElement('div')
     auswahlSelected.classList = 'auswahl__option auswahl__selected';
 
     const auswahlSelectedLabel = document.createElement('div')
-    const auswahlSelectedLabelText = document.createTextNode(data.find(option => option.selected).label);
+    const auswahlSelectedLabelText = document.createTextNode(
+      data.find(option => option.selected).label);
     auswahlSelectedLabel.classList.add('auswahl__selected-label');
     auswahlSelectedLabel.append(auswahlSelectedLabelText);
 
@@ -40,7 +36,7 @@ export default class AuswahlView {
 
     auswahlSelected.append(auswahlSelectedLabel);
     auswahlSelected.append(auswahlSelectedArrow);
-    this.el.append(auswahlSelected);
+    auswahl.append(auswahlSelected);
 
     const auswahlList = document.createElement('div')
     auswahlList.classList.add('auswahl__list');
@@ -58,11 +54,15 @@ export default class AuswahlView {
 
       auswahlListOption.append(auswahlListOptionLabel);
       auswahlList.append(auswahlListOption);
-    });
-    this.el.append(auswahlList);
 
-    this.#container.append(this.el);
+      auswahlListOption.addEventListener('click', this.#handleChange)
+    });
+    
+    auswahl.append(auswahlList);
+    this.#container.append(auswahl);
     this.#ref.after(this.#container);
+
+    auswahl.addEventListener('click', this.handleClick);
   }
 
   #hide() {
@@ -72,18 +72,14 @@ export default class AuswahlView {
   #clear = () => {
     this.#container.remove();
   }
-  
-  #handleClick = () => {
-    this.el.addEventListener('click', (e) => {
-      this.el.classList.toggle('auswahl--is-open');
-    });
+
+  #handleClick = (e) => {
+    const clicked = e.target.closest('.auswahl');
+
+    clicked.classList.toggle("auswahl--open")
   }
 
-  handleChange(handler) {
-    this.el.addEventListener('click', (e) => {
-      if (e.target.classList.contains('auswahl__list-option')) {
-        handler(e.target);
-      }
-    });
+  handleChange = (e) => {
+    console.log(e.target)
   }
 }

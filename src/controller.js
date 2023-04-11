@@ -5,26 +5,18 @@ import AuswahlView from "./view/AuswahlView";
 
 const auswahlen = selectElements.map(selectElement => new Auswahl(selectElement));
 
-const handleRender = () => {
+const controlRender = () => {
   auswahlen.forEach(auswahl => {
-    const view = new AuswahlView({ ref: auswahl.ref, options: auswahl.options })
-
-    view.handleChange((e) => {
-      const { options } = auswahl;
-      const selectedOption = auswahl.getOptionByValue(e.dataset.auswahlValue)
-
-      auswahl.options = options.map(option => {
-        if (option.value === selectedOption.value) {
-          option.selected = true;
-        } else {
-          option.selected = false;
-        }
-        return option;
-      })
-
-      view.render(auswahl.options);
-    })
+    auswahl.render();
   });
 }
 
-handleRender();
+const initApp = () => {
+  auswahlen.forEach(auswahl => {
+    const view = new AuswahlView({ ref: auswahl.ref })
+
+    view.handleChange(controlRender)
+  });
+}
+
+initApp();
