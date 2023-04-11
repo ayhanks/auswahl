@@ -1,56 +1,89 @@
 export default class AuswahlView {
-  #el;
-  #data;
+  #ref;
+  #container;
 
-  constructor({ el, data }) {
-    this.#el = el;
-    this.#data = data;
+  constructor({ ref, options }) {
+    this.#ref = ref;
 
-    this.render();
-    this.#hideEl();
-    this.#addClickHandler();
+    this.#hide();
+    this.render(options, true);
+
+    this.#handleClick();
   }
 
-  render() {
-    const markup = this.#createMarkup();
-    this.#el.insertAdjacentHTML("afterend", markup);
+  render(data = [], initial = false) {
+    if (!initial) {
+      this.#clear();
+    }
+    this.#createHTML(data);
   }
 
+  #createHTML = (data) => {
+    this.#container = document.createElement('div')
+    this.#container.classList.add('auswahl-container');
 
-  #createMarkup() {
-    const { options, attributes } = this.#data;
-    return `
-      <span class="auswahl">
-        <div class="auswahl__option auswahl__selected">
-          <div class="auswahl__selected-label">Label</div>
-          <div class="auswahl__selected-arrow"></div>
-        </div>
-        <div class="auswahl__list">
-          ${options.map(option => `
-            <div class="auswahl__list-option auswahl__option ${option.selected ? "auswahl__option--selected" : ""}">${option.label}</div>
-          `).join("")}
-        </div>
-      </span>
-    `
-  }
 
-  #hideEl() {
-    this.#el.classList.add("auswahl__hidden");
-  }
+    this.el = document.createElement('div')
+    this.el.classList.add('auswahl');
+    console.log(this.el)
 
-  #addClickHandler() {
-    document.body.addEventListener("click", e => {
-      if (!e.target.closest(".auswahl")) {
-        document.querySelectorAll(".auswahl--is-open").forEach(auswahl => {
-          auswahl.classList.remove("auswahl--is-open");
-        })
+    const auswahlSelected = document.createElement('div')
+    auswahlSelected.classList = 'auswahl__option auswahl__selected';
+
+    const auswahlSelectedLabel = document.createElement('div')
+    const auswahlSelectedLabelText = document.createTextNode(data.find(option => option.selected).label);
+    auswahlSelectedLabel.classList.add('auswahl__selected-label');
+    auswahlSelectedLabel.append(auswahlSelectedLabelText);
+
+    const auswahlSelectedArrow = document.createElement('div')
+    auswahlSelectedArrow.classList.add('auswahl__selected-arrow');
+
+    auswahlSelected.append(auswahlSelectedLabel);
+    auswahlSelected.append(auswahlSelectedArrow);
+    this.el.append(auswahlSelected);
+
+    const auswahlList = document.createElement('div')
+    auswahlList.classList.add('auswahl__list');
+
+    data.forEach(option => {
+      const auswahlListOption = document.createElement('div');
+      auswahlListOption.classList.add('auswahl__list-option');
+      auswahlListOption.classList.add('auswahl__option');
+
+      if (option.selected) {
+        auswahlListOption.classList.add('auswahl__option--selected');
       }
-    })
+      auswahlListOption.dataset.auswahlValue = option.value;
+      const auswahlListOptionLabel = document.createTextNode(option.label);
 
-    document.querySelectorAll(".auswahl").forEach(auswahl => {
-      auswahl.addEventListener("click", () => {
-        auswahl.classList.toggle("auswahl--is-open")
-      });
-    })
+      auswahlListOption.append(auswahlListOptionLabel);
+      auswahlList.append(auswahlListOption);
+    });
+    this.el.append(auswahlList);
+
+    this.#container.append(this.el);
+    this.#ref.after(this.#container);
+  }
+
+  #hide() {
+    this.#ref.classList.add('auswahl__hidden');
+  }
+
+  #clear = () => {
+    this.#container.remove();
+  }
+  
+  #handleClick = () => {
+    this.el.addEventListener('click', (e) => {
+      this.el.classList.toggle('auswahl--is-open');
+    });
+  }
+
+  handleChange(handler) {
+    this.el.addEventListener('click', (e) => {
+      if (e.target.classList.contains('auswahl__list-option')) {
+        handler(e.target);
+      }
+    });
   }
 }

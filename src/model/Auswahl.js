@@ -1,22 +1,12 @@
 import AuswahlOption from "./AuswahlOption";
-import AuswahlView from "../view/AuswahlView";
 
 export default class Auswahl {
   #ref;
   #options = [];
-  #attributes = {};
 
   constructor(ref) {
     this.#ref = ref;
-    this.#addOptions()
-
-    new AuswahlView({
-      el: this.#ref,
-      data: {
-        options: this.#options,
-        attributes: this.#attributes
-      },
-    });
+    this.#init();
   }
 
   #addOptions() {
@@ -26,6 +16,36 @@ export default class Auswahl {
         option.value,
         option.selected
     ))
+  }
+
+  #init () {
+    this.#addOptions();
+  }
+
+  get ref() {
+    return this.#ref;
+  }
+
+  get options() {
+    return this.#options;
+  }
+
+  set options(options) {
+    this.#options = options;
+  }
+
+  getOptionByValue(value) {
+    return this.#options.find(option => option.value === value);
+  }
+
+  changeOption(option) {
+    this.#options.forEach((opt) => {
+      if (opt.value === option.value) {
+        opt.selected = true;
+      } else {
+        opt.selected = false;
+      }
+    });
   }
 }
 
